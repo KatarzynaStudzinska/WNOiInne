@@ -119,7 +119,7 @@ class Komiwojazer(QtGui.QWidget):
         self.ui.sc.draw()'''
 
     def przesun(self):
-        print "Przesuwamy sie"
+
 
         statek = self.naKtoryStatekKliknelismy()
         znak, orient = self.ui.textEdit.toPlainText()
@@ -130,10 +130,12 @@ class Komiwojazer(QtGui.QWidget):
             statek.przesun(znak, orient)
 
         self.poleGry.odswiezTablice()
+
         self.rysujStatki()
         self.ui.sc.draw()
 
     def rysujStatki(self):
+        self.poleGry.odswiezTablice()
         self.ui.sc.czysc()
         srodki = miod.rysujMiod(self.ui.sc.axes)
         for i in range(self.poleGry.dlugoscTablicy):
@@ -141,6 +143,10 @@ class Komiwojazer(QtGui.QWidget):
                 if self.poleGry.mojaTablica[i][j] == 1:
                     x, y = srodki[i*10+j] #[i*10+j]  [j*10+i] moze i tak trzeba
                     miod.miodStatek(x, y, self.ui.sc.axes, 1)
+                if self.poleGry.mojaTablica[i][j] == 2:
+                    x, y = srodki[i*10+j] #[i*10+j]  [j*10+i] moze i tak trzeba
+                    miod.miodStatek(x, y, self.ui.sc.axes, 2)
+        self.ui.sc.draw()
 
     def wstawStatki(self):
         dlugosc = self.dlugoscstatku()              # Pobieramy dlugosc statku z listy dlugosci statkow
@@ -183,9 +189,18 @@ class Komiwojazer(QtGui.QWidget):
     def kur(self):
         x, y = parsuj.parsuj(self._data)
         for statek in self.poleGry.tablicaStatkow:
+            i = 0
             for czlon in statek.pozycjaCzlonu:
-                if 
-        print x , y
+
+                if czlon[0] == y and czlon[1] == x:
+                    data = "Przed chwila trafiles!"
+                    self.client_socket.send(data)
+                    self.ui.textEdit.clear()
+                    self.dane.set(data)
+                    statek.stan[i] = 2
+                i = i + 1
+        self.rysujStatki()
+
 
 
     def oberwij(self):
@@ -195,13 +210,18 @@ class Komiwojazer(QtGui.QWidget):
                 break
             try:
                 data = self.client_socket.recv(RECV_BUFFER)
-                print data
-                self._data = data
+                if not self.dane.get() == data:
+                    if data == "Przed chwila trafiles!":
+                        self.ui.textEdit.insertPlainText(" ")
+                        self.ui.textEdit.insertPlainText("Rozbitkowie donosza, ze przed chwila rozbiles statek wroga!")
+                    else:
+                        print data
+                        self._data = data
 
                 #x, y = parsuj(data)
                 #print x
                 if self.dane.get() == data:
-                    print "Dobrze"
+                    print data
                     self.dane.clr()
             except:
                 break
