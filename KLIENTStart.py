@@ -1,5 +1,5 @@
 import obiekty as obiekt
-import miod
+import miod, parsuj
 import socket
 import sys
 import numpy as np
@@ -25,6 +25,7 @@ class Komiwojazer(QtGui.QWidget):
     _tabkrawedzi = []
     _tabwezlow = []
     _gen = []
+    _data = []
 
     def onclick(self, event):
         x = event.xdata
@@ -103,7 +104,7 @@ class Komiwojazer(QtGui.QWidget):
         QtCore.QObject.connect(self.ui.WSTAW, QtCore.SIGNAL("clicked()"), self.wstawStatki)
         #self.ui.PRZESUN.connect("clicked()", self.przesun)
         self.ui.PRZESUN.clicked.connect(self.przesun)
-        self.ui.INNY.clicked.connect(self.przesun)
+        self.ui.STRZELAJ.clicked.connect(self.kur)
         self.ui.sc.mpl_connect('button_press_event', self.onclick)
 
 
@@ -179,6 +180,14 @@ class Komiwojazer(QtGui.QWidget):
         for statek in self.poleGry.tablicaStatkow:
             pass
 
+    def kur(self):
+        x, y = parsuj.parsuj(self._data)
+        for statek in self.poleGry.tablicaStatkow:
+            for czlon in statek.pozycjaCzlonu:
+                if 
+        print x , y
+
+
     def oberwij(self):
         data = ""
         while True:
@@ -187,15 +196,20 @@ class Komiwojazer(QtGui.QWidget):
             try:
                 data = self.client_socket.recv(RECV_BUFFER)
                 print data
+                self._data = data
+
+                #x, y = parsuj(data)
+                #print x
                 if self.dane.get() == data:
                     print "Dobrze"
                     self.dane.clr()
-
-
             except:
                 break
             if not data:
                 break
+
+    def datuj(self):
+        print self._data
 
 
 if __name__ == "__main__":
