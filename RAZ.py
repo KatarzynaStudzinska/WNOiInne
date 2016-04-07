@@ -122,7 +122,7 @@ class Ui_Widget(object):
         self.PRZESUN.setText(_translate("Widget", "PRZESUN", None))
         self.WSTAW.setText(_translate("Widget", "WSTAW STATEK", None))
         self.INNY.setText(_translate("Widget", "CO INNEGO", None))
-        self.label.setText(_translate("Widget", "TEKST", None))
+        self.label.setText(_translate("Widget", "+o/-o - obrot +w/-h -przesuwanie", None))
 
 
 if __name__ == "__main__":

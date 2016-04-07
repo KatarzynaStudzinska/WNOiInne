@@ -30,6 +30,8 @@ def miodStatek(cX, cY, obiekt, stan):               # cX, cY to wspolrzedne srod
         obiekt.fill(Raz, Dwa, 'g')
     if stan == 2:
         obiekt.fill(Raz, Dwa, 'r')
+    if stan == 3:
+        obiekt.fill(Raz, Dwa, 'c')
 
 
 def komorkaMiodu(cX, cY, obiekt):

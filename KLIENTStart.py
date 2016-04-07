@@ -28,10 +28,11 @@ class Komiwojazer(QtGui.QWidget):
     _data = []
 
     def onclick(self, event):
+
         x = event.xdata
         y = event.ydata
         srodki = miod.rysujMiod(self.ui.sc.axes)
-
+        self.ui.textEdit.clear()
         for i in range(srodki.__len__()):
             xs, ys = srodki[i]
             if np.absolute(xs - x) < 1:
@@ -39,6 +40,11 @@ class Komiwojazer(QtGui.QWidget):
                     ikomorki = i % 10
                     jkomorki = (i - ikomorki)/10
                     self._aktualneKliki = [ikomorki, jkomorki]
+                    self.ui.textEdit.insertPlainText(str(ikomorki) + " " + str(jkomorki))
+
+                    miod.miodStatek(xs, ys, self.ui.sc.axes, 3)
+        self.ui.sc.draw()
+
 
     def naKtoryStatekKliknelismy(self):
         for i in range(self.poleGry.tablicaStatkow.__len__()):
@@ -213,7 +219,7 @@ class Komiwojazer(QtGui.QWidget):
                 if not self.dane.get() == data:
                     if data == "Przed chwila trafiles!":
                         self.ui.textEdit.insertPlainText(" ")
-                        self.ui.textEdit.insertPlainText("Rozbitkowie donosza, ze przed chwila rozbiles statek wroga!")
+                        self.ui.textEdit.insertPlainText("Ktos zostal trafiony.")
                     else:
                         print data
                         self._data = data
