@@ -48,12 +48,15 @@ class Komiwojazer(QtGui.QWidget):
     def zapisz(self):
         self.poleGry.drukujTablice()
 
-        if self.ostatniStatek != 0:
+        if not self.ostatniStatek:
             self.ui.textEdit.clear()
             self.ui.textEdit.insertPlainText("Nie mozna zapisac przed polozeniem wszyskich stastkow.")
 
         else:
-            self.ui.textEdit.insertPlainText("Zapisano")
+            nazwa = self.ui.textEdit.toPlainText() + ".txt"
+
+            self.ui.textEdit.clear()
+            self.ui.textEdit.insertPlainText("Zapisano!")
             tablicaCzlonow = []
             tablicaStanuStatku = []
             tablicaGdzieStatki = []
@@ -69,11 +72,13 @@ class Komiwojazer(QtGui.QWidget):
             data = {'plansza': self.poleGry.dajMojaTablica(), 'gdzieStatki':tablicaGdzieStatki, 'zniszczenie':tablicaStanuStatku,
                     'dlugosc':tablicaDlugosci, 'czlony':tablicaCzlonow}
 
-            with open('my_json.txt', 'w') as fp:
+            with open(nazwa, 'w') as fp:
                 json.dump(data, fp)
             pass
 
-    def odczyt(self):
+    def odczyt(self):   
+
+        self.ostatniStatek = True
         json_data = open('my_json.txt').read()
         data = json.loads(json_data)
 
@@ -125,7 +130,7 @@ class Komiwojazer(QtGui.QWidget):
             Thread(target=self.oberwij).start()             #, args=(client_socket, lock)).start()
 
     def __init__(self, parent=None):
-        self.ostatniStatek = 10
+        self.ostatniStatek = False
         self._aktualneKliki = [0, 0]
         self.dane = obiekt.Dane()
         QtGui.QWidget.__init__(self, parent)
@@ -164,7 +169,8 @@ class Komiwojazer(QtGui.QWidget):
 
 
     def przesun(self):
-        if self.ostatniStatek != 0:
+        if not self.ostatniStatek:
+            self.ui.textEdit.clear()
             self.ui.textEdit.insertPlainText("Nie obracaj przed polozeniem wszystkich statkow")
 
         statek = self.naKtoryStatekKliknelismy()
@@ -196,27 +202,29 @@ class Komiwojazer(QtGui.QWidget):
         self.ui.sc.draw()
 
     def wstawStatki(self):
-        dlugosc = self.dlugoscstatku()              # Pobieramy dlugosc statku z listy dlugosci statkow
-        self.ostatniStatek = dlugosc
+            if not self.ostatniStatek:
+                dlugosc = self.dlugoscstatku()              # Pobieramy dlugosc statku z listy dlugosci statkow
+                if dlugosc  == 0:
+                    self.ostatniStatek = True
 
-        if dlugosc == 0:
-            self.ui.textEdit.clear()
-            self.ui.textEdit.insertPlainText("Skonczyly ci sie statki")
-        else:
-            statekY, statekX = self._aktualneKliki #self.ui.textEdit.toPlainText()
+                if dlugosc == 0:
+                    self.ui.textEdit.clear()
+                    self.ui.textEdit.insertPlainText("Skonczyly ci sie statki")
+                else:
+                    statekY, statekX = self._aktualneKliki #self.ui.textEdit.toPlainText()
 
-            if int(statekX) + dlugosc > 10:
-                self.ui.textEdit.clear()
-                self.ui.textEdit.insertPlainText( "Nie zmiesciles sie w polu walki. Statek wypadl ze swiata. Nie mozesz go uzywac.")
-            else:
-                self.poleGry.tablicaStatkow.append(obiekt.Statek(dlugosc, int(statekX), int(statekY),
-                                                                 self.poleGry.tablicaStatkow.__len__()))
-                self.poleGry.piszTablice()
-               # self.ui.sc._tab = self.poleGry.mojaTablica
-        self.poleGry.drukujTablice()
-        self.rysujStatki()
-        self.ui.sc.draw()
-        pass
+                    if int(statekX) + dlugosc > 10:
+                        self.ui.textEdit.clear()
+                        self.ui.textEdit.insertPlainText( "Nie zmiesciles sie w polu walki. Statek wypadl ze swiata. Nie mozesz go uzywac.")
+                    else:
+                        self.poleGry.tablicaStatkow.append(obiekt.Statek(dlugosc, int(statekX), int(statekY),
+                                                                         self.poleGry.tablicaStatkow.__len__()))
+                        self.poleGry.piszTablice()
+                       # self.ui.sc._tab = self.poleGry.mojaTablica
+                self.poleGry.drukujTablice()
+                self.rysujStatki()
+                self.ui.sc.draw()
+                pass
 
     def strzel(self):
         data = str(self._aktualneKliki[0])+str( self._aktualneKliki[1])#self.ui.textEdit.toPlainText()#str(raw_input())
