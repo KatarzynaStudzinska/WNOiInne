@@ -87,7 +87,7 @@ class Ui_Widget(object):
         self.textEdit.setGeometry(QtCore.QRect(20, 460, 651, 81))
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
         self.verticalLayoutWidget = QtGui.QWidget(Widget)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(20, 550, 651, 135))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(15, 560, 670, 135))
         self.verticalLayoutWidget.setObjectName(_fromUtf8("verticalLayoutWidget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setMargin(11)
@@ -105,6 +105,11 @@ class Ui_Widget(object):
         self.INNY = QtGui.QPushButton(self.verticalLayoutWidget)
         self.INNY.setObjectName(_fromUtf8("INNY"))
         self.verticalLayout.addWidget(self.INNY)
+        self.ZAPIS = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.ZAPIS.setObjectName(_fromUtf8("ZAPIS"))
+        self.verticalLayout.addWidget(self.ZAPIS)
+
+
         self.label = QtGui.QLabel(Widget)
         self.label.setGeometry(QtCore.QRect(20, 700, 651, 16))
         self.label.setObjectName(_fromUtf8("label"))
@@ -122,6 +127,7 @@ class Ui_Widget(object):
         self.PRZESUN.setText(_translate("Widget", "PRZESUN", None))
         self.WSTAW.setText(_translate("Widget", "WSTAW STATEK", None))
         self.INNY.setText(_translate("Widget", "CO INNEGO", None))
+        self.ZAPIS.setText(_translate("Widget", "ZAPIS", None))
         self.label.setText(_translate("Widget", "+o/-o - obrot +w/-h -przesuwanie", None))
 
 

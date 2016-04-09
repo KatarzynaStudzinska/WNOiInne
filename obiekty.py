@@ -12,11 +12,6 @@ class Statek():
                 self.stan = [1]*jakaDlug
                 self.pozycjaCzlonu = []
 
-            def getCzyRuszamy(self):
-                return self.czyRuszamy
-
-            def setCzyRuszamy(self):
-                self.czyRuszamy = False
 
             def zmienPozycjaCzlonu(self, x, y):
                 self.pozycjaCzlonu.append([x, y])
@@ -86,8 +81,12 @@ class Tablica():
             return self.mojaTablica
 
         def drukujTablice(self):
+            print "Oto ona: \n\n"
             for i in range(self.mojaTablica.__len__()):
                 print self.mojaTablica[i]
+
+            for statek in self.tablicaStatkow:
+                print statek.pozycjaCzlonu
 
         def piszTablice(self):
             for statek in self.tablicaStatkow:

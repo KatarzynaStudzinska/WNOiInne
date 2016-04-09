@@ -1,4 +1,40 @@
 import json
+import obiekty as obiekty
+
+
+
+statek = obiekty.Statek()
+
+
+
+'''
+
+def serialize_instance1(obj):
+    d = {'__classname__': type(obj).__name__}
+    d.update(vars(obj))
+    return d
+
+def object_decoder1(obj):
+    if '__type__' in obj and obj['__type__'] == 'User':
+        return User(obj['name'], obj['username'])
+    return obj
+
+user = {"__type__": "User", "name": "John Smith", "username": "jsmith"}
+
+
+
+with open('dane.txt', 'w') as fp:
+    json.dump(user, fp, default=serialize_instance)
+
+
+json_data = open('dane.txt').read()
+
+
+user = json.loads(json_data, object_hook=object_decoder)
+
+# = json.loads('{"__type__": "User", "name": "John Smith", "username": "jsmith"}')
+print user.wyj()
+
 
 def serialize_instance(obj):
     d = {'__classname__': type(obj).__name__}
@@ -32,9 +68,10 @@ data = {"nos": 333, "k": kon, "obiekt": 333}
 
 with open('dane.txt', 'w') as fp:
     json.dump(data, fp, default=serialize_instance)
-'''
+
 json_data = open('dane.txt').read()
 data = json.loads(json_data, object_hook=unserialize_object)
 konik = data["k"]
-konik.printuj()'''
+konik.printuj()
+'''
 

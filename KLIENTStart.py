@@ -46,49 +46,50 @@ class Komiwojazer(QtGui.QWidget):
         self.ui.sc.draw()
 
     def zapisz(self):
-        '''
-        dict = {"plansza":self.poleGry, "liczba":9}
-        e = dict_to_xml('stock', dict)
-        open('stan.txt', 'w').write(tostring(e))
-        '''
+        self.poleGry.drukujTablice()
 
-        tablicaGdzieStatki = []
-        tablicaCzlonow = []
-        tablicaStanuStatku = []
-        tablicaDlugosci = []
+        if self.ostatniStatek != 0:
+            self.ui.textEdit.clear()
+            self.ui.textEdit.insertPlainText("Nie mozna zapisac przed polozeniem wszyskich stastkow.")
 
-        for statek in (self.poleGry.tablicaStatkow):
-            tablicaCzlonow.append(statek.pozycjaCzlonu)
-            tablicaStanuStatku.append(statek.stan)
-            tablicaGdzieStatki.append(statek.pozycjaCzlonu[0])
-            tablicaDlugosci.append(statek.dlugosc)
+        else:
+            self.ui.textEdit.insertPlainText("Zapisano")
+            tablicaCzlonow = []
+            tablicaStanuStatku = []
+            tablicaGdzieStatki = []
+            tablicaDlugosci = []
 
-        print tablicaGdzieStatki
 
-        data = {'plansza': self.poleGry.dajMojaTablica(), 'gdzieStatki':tablicaGdzieStatki, 'zniszczenie':tablicaStanuStatku,
-                'dlugosc':tablicaDlugosci, 'czlony':tablicaCzlonow}
+            for statek in (self.poleGry.tablicaStatkow):
+                tablicaCzlonow.append(statek.pozycjaCzlonu)
+                tablicaStanuStatku.append(statek.stan)
+                tablicaGdzieStatki.append(statek.pozycjaCzlonu[0])
+                tablicaDlugosci.append(statek.dlugosc)
 
-        with open('my_json.txt', 'w') as fp:
-            json.dump(data, fp)
+            data = {'plansza': self.poleGry.dajMojaTablica(), 'gdzieStatki':tablicaGdzieStatki, 'zniszczenie':tablicaStanuStatku,
+                    'dlugosc':tablicaDlugosci, 'czlony':tablicaCzlonow}
 
+            with open('my_json.txt', 'w') as fp:
+                json.dump(data, fp)
+            pass
+
+    def odczyt(self):
         json_data = open('my_json.txt').read()
-
         data = json.loads(json_data)
+
         poprzedniaPlansza = data["plansza"]
         poprzedniePozycja = data["gdzieStatki"]
+        czlony = data["czlony"]
         dlugosc = data["dlugosc"]
         self.poleGry = obiekt.Tablica()
-        for (i, k) in zip(poprzedniePozycja, dlugosc):
-            print i[0], i[1]
-            self.poleGry.tablicaStatkow.append(obiekt.Statek(k, i[0], i[1],
-                                                                 self.poleGry.tablicaStatkow.__len__()))
-            self.poleGry.piszTablice()
-            self.ui.sc._tab = self.poleGry.mojaTablica
-
+        for (pozycja, dlug, czlon) in zip(poprzedniePozycja, dlugosc, czlony):
+            print pozycja[0], pozycja[1]
+            statek = obiekt.Statek(dlug, pozycja[0], pozycja[1], self.poleGry.tablicaStatkow.__len__())
+            statek.pozycjaCzlonu = czlon
+            self.poleGry.tablicaStatkow.append(statek)
+            self.poleGry.odswiezTablice()
         self.rysujStatki()
-        pass
-
-
+        self.poleGry.drukujTablice()
 
     def naKtoryStatekKliknelismy(self):
         for i in range(self.poleGry.tablicaStatkow.__len__()):
@@ -124,7 +125,8 @@ class Komiwojazer(QtGui.QWidget):
             Thread(target=self.oberwij).start()             #, args=(client_socket, lock)).start()
 
     def __init__(self, parent=None):
-        self._aktualneKliki = [0,0]
+        self.ostatniStatek = 10
+        self._aktualneKliki = [0, 0]
         self.dane = obiekt.Dane()
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_Widget()
@@ -155,21 +157,15 @@ class Komiwojazer(QtGui.QWidget):
         #self.ui.PRZESUN.connect("clicked()", self.przesun)
         self.ui.PRZESUN.clicked.connect(self.przesun)
         self.ui.STRZELAJ.clicked.connect(self.kur)
+        self.ui.ZAPIS.clicked.connect(self.zapisz)
+        self.ui.INNY.clicked.connect(self.odczyt)
         self.ui.sc.mpl_connect('button_press_event', self.onclick)
 
 
-    '''def przesun(self):
-
-        print "KOLO"
-        znak, orient = self.ui.textEdit.toPlainText()
-        statek = self.naKtoryStatekKliknelismy()
-        statek.przesun(znak, orient)
-        self.poleGry.odswiezTablice()
-        self.rysujStatki()
-        self.ui.sc.draw()'''
 
     def przesun(self):
-
+        if self.ostatniStatek != 0:
+            self.ui.textEdit.insertPlainText("Nie obracaj przed polozeniem wszystkich statkow")
 
         statek = self.naKtoryStatekKliknelismy()
         znak, orient = self.ui.textEdit.toPlainText()
@@ -180,7 +176,7 @@ class Komiwojazer(QtGui.QWidget):
             statek.przesun(znak, orient)
 
         self.poleGry.odswiezTablice()
-
+        self.poleGry.drukujTablice()
         self.rysujStatki()
         self.ui.sc.draw()
 
@@ -188,6 +184,7 @@ class Komiwojazer(QtGui.QWidget):
         self.poleGry.odswiezTablice()
         self.ui.sc.czysc()
         srodki = miod.rysujMiod(self.ui.sc.axes)
+
         for i in range(self.poleGry.dlugoscTablicy):
             for j in range(self.poleGry.dlugoscTablicy):
                 if self.poleGry.mojaTablica[i][j] == 1:
@@ -200,6 +197,7 @@ class Komiwojazer(QtGui.QWidget):
 
     def wstawStatki(self):
         dlugosc = self.dlugoscstatku()              # Pobieramy dlugosc statku z listy dlugosci statkow
+        self.ostatniStatek = dlugosc
 
         if dlugosc == 0:
             self.ui.textEdit.clear()
@@ -214,8 +212,8 @@ class Komiwojazer(QtGui.QWidget):
                 self.poleGry.tablicaStatkow.append(obiekt.Statek(dlugosc, int(statekX), int(statekY),
                                                                  self.poleGry.tablicaStatkow.__len__()))
                 self.poleGry.piszTablice()
-                self.ui.sc._tab = self.poleGry.mojaTablica
-
+               # self.ui.sc._tab = self.poleGry.mojaTablica
+        self.poleGry.drukujTablice()
         self.rysujStatki()
         self.ui.sc.draw()
         pass
@@ -279,8 +277,6 @@ class Komiwojazer(QtGui.QWidget):
             if not data:
                 break
 
-    def datuj(self):
-        print self._data
 
 
 if __name__ == "__main__":
