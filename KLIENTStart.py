@@ -53,21 +53,23 @@ class Komiwojazer(QtGui.QWidget):
         '''
 
         tablicaGdzieStatki = []
+        tablicaCzlonow = []
         tablicaStanuStatku = []
         tablicaDlugosci = []
 
         for statek in (self.poleGry.tablicaStatkow):
-
+            tablicaCzlonow.append(statek.pozycjaCzlonu)
             tablicaStanuStatku.append(statek.stan)
             tablicaGdzieStatki.append(statek.pozycjaCzlonu[0])
             tablicaDlugosci.append(statek.dlugosc)
 
         print tablicaGdzieStatki
 
-        data = {'plansza': self.poleGry.dajMojaTablica(), 'gdzieStatki':tablicaGdzieStatki, 'zniszczenie':tablicaStanuStatku, 'dlugosc':tablicaDlugosci}
+        data = {'plansza': self.poleGry.dajMojaTablica(), 'gdzieStatki':tablicaGdzieStatki, 'zniszczenie':tablicaStanuStatku,
+                'dlugosc':tablicaDlugosci, 'czlony':tablicaCzlonow}
 
-        #with open('my_json.txt', 'w') as fp:
-        #    json.dump(data, fp)
+        with open('my_json.txt', 'w') as fp:
+            json.dump(data, fp)
 
         json_data = open('my_json.txt').read()
 
