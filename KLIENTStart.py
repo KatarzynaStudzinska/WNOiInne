@@ -3,7 +3,7 @@ import miod, parsuj
 import socket
 import sys
 import numpy as np
-
+import json
 from random import random
 from threading import Thread, Lock
 from PyQt4 import QtCore, QtGui
@@ -44,6 +44,48 @@ class Komiwojazer(QtGui.QWidget):
 
                     miod.miodStatek(xs, ys, self.ui.sc.axes, 3)
         self.ui.sc.draw()
+
+    def zapisz(self):
+        '''
+        dict = {"plansza":self.poleGry, "liczba":9}
+        e = dict_to_xml('stock', dict)
+        open('stan.txt', 'w').write(tostring(e))
+        '''
+
+        tablicaGdzieStatki = []
+        tablicaStanuStatku = []
+        tablicaDlugosci = []
+
+        for statek in (self.poleGry.tablicaStatkow):
+
+            tablicaStanuStatku.append(statek.stan)
+            tablicaGdzieStatki.append(statek.pozycjaCzlonu[0])
+            tablicaDlugosci.append(statek.dlugosc)
+
+        print tablicaGdzieStatki
+
+        data = {'plansza': self.poleGry.dajMojaTablica(), 'gdzieStatki':tablicaGdzieStatki, 'zniszczenie':tablicaStanuStatku, 'dlugosc':tablicaDlugosci}
+
+        #with open('my_json.txt', 'w') as fp:
+        #    json.dump(data, fp)
+
+        json_data = open('my_json.txt').read()
+
+        data = json.loads(json_data)
+        poprzedniaPlansza = data["plansza"]
+        poprzedniePozycja = data["gdzieStatki"]
+        dlugosc = data["dlugosc"]
+        self.poleGry = obiekt.Tablica()
+        for (i, k) in zip(poprzedniePozycja, dlugosc):
+            print i[0], i[1]
+            self.poleGry.tablicaStatkow.append(obiekt.Statek(k, i[0], i[1],
+                                                                 self.poleGry.tablicaStatkow.__len__()))
+            self.poleGry.piszTablice()
+            self.ui.sc._tab = self.poleGry.mojaTablica
+
+        self.rysujStatki()
+        pass
+
 
 
     def naKtoryStatekKliknelismy(self):
@@ -218,8 +260,9 @@ class Komiwojazer(QtGui.QWidget):
                 data = self.client_socket.recv(RECV_BUFFER)
                 if not self.dane.get() == data:
                     if data == "Przed chwila trafiles!":
-                        self.ui.textEdit.insertPlainText(" ")
-                        self.ui.textEdit.insertPlainText("Ktos zostal trafiony.")
+                        #self.ui.textEdit.insertPlainText(" ")
+                        #self.ui.textEdit.insertPlainText("Ktos zostal trafiony.")
+                        pass
                     else:
                         print data
                         self._data = data

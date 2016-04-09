@@ -1,7 +1,4 @@
-d = [1,2, 3]
-dd = [3,4,2]
-k = str(d[0]) + str(d[1])
+import json
+data = {"name":"EWssacdA", "name":"EWA", "k":3}
 
-
-for m, mm in zip(d, dd):
-    print m, mm
+print data.get("name", False)
