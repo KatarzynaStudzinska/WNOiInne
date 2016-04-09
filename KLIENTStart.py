@@ -76,7 +76,7 @@ class Komiwojazer(QtGui.QWidget):
                 json.dump(data, fp)
             pass
 
-    def odczyt(self):   
+    def odczyt(self):
 
         self.ostatniStatek = True
         json_data = open('my_json.txt').read()
