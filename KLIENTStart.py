@@ -8,6 +8,7 @@ from random import random
 from threading import Thread, Lock
 from PyQt4 import QtCore, QtGui
 from RAZ import Ui_Widget
+import os
 
 global PORT, HOST, RECV_BUFFER, killall
 
@@ -50,10 +51,15 @@ class Komiwojazer(QtGui.QWidget):
 
         if not self.ostatniStatek:
             self.ui.textEdit.clear()
-            self.ui.textEdit.insertPlainText("Nie mozna zapisac przed polozeniem wszyskich stastkow.")
+            self.ui.textEdit.insertPlainText("Nie mozna zapisac przed polozeniem wszyskich statkow.")
 
         else:
-            nazwa = self.ui.textEdit.toPlainText() + ".txt"
+            sender = self.sender()
+            wcisniete = sender.text()
+            if wcisniete =="ZAPIS":             # Zapis do pliku wpisanego przez uzytkownika
+                nazwa = self.ui.textEdit.toPlainText() + ".txt"
+            else:                               # Zapis do pliku do odtwarzania ruchu
+                nazwa = "my_json.txt"
 
             self.ui.textEdit.clear()
             self.ui.textEdit.insertPlainText("Zapisano!")
@@ -72,15 +78,34 @@ class Komiwojazer(QtGui.QWidget):
             data = {'plansza': self.poleGry.dajMojaTablica(), 'gdzieStatki':tablicaGdzieStatki, 'zniszczenie':tablicaStanuStatku,
                     'dlugosc':tablicaDlugosci, 'czlony':tablicaCzlonow}
 
-            with open(nazwa, 'w') as fp:
+            with open(nazwa, 'a') as fp:
                 json.dump(data, fp)
+                fp.write('\n')
             pass
 
     def odczyt(self):   
 
         self.ostatniStatek = True
-        json_data = open('my_json.txt').read()
-        data = json.loads(json_data)
+
+        sender = self.sender()
+        wcisniete = sender.text()
+
+        if wcisniete =="CO INNEGO":             # Zapis do pliku wpisanego przez uzytkownika
+            nazwa = "my_json.txt"
+        else:                               # Zapis do pliku do odtwarzania ruchu
+            nazwa = self.ui.textEdit.toPlainText() + ".txt"
+
+        with open(nazwa, 'rb') as fh:       # Czytanie ostatniej linijki zapisanego ruchu
+            fh.seek(-660, os.SEEK_END)
+            last = fh.readlines()[-1].decode()
+
+        with open(nazwa, 'rb+') as ft:
+            ft.seek(-660, os.SEEK_END)
+            ft.truncate()
+
+        print ("ostatni")
+        print (last)
+        data = json.loads(last)
 
         poprzedniaPlansza = data["plansza"]
         poprzedniePozycja = data["gdzieStatki"]
@@ -160,31 +185,84 @@ class Komiwojazer(QtGui.QWidget):
         QtCore.QObject.connect(self.ui.STRZELAJ, QtCore.SIGNAL("clicked()"), self.strzel)
         QtCore.QObject.connect(self.ui.WSTAW, QtCore.SIGNAL("clicked()"), self.wstawStatki)
         #self.ui.PRZESUN.connect("clicked()", self.przesun)
-        self.ui.PRZESUN.clicked.connect(self.przesun)
+        #self.ui.PRZESUN.clicked.connect(self.przesun)
         self.ui.STRZELAJ.clicked.connect(self.kur)
         self.ui.ZAPIS.clicked.connect(self.zapisz)
         self.ui.INNY.clicked.connect(self.odczyt)
+        self.ui.ODCZYTZPLIKU.clicked.connect(self.odczyt)
+        self.ui.sc.mpl_connect('button_press_event', self.onclick)
+
+        self.ui.OBROTZEGAR.clicked.connect(self.obrot_zgodny)
+        self.ui.OBROTPRZECIWNIE.clicked.connect(self.obrot_przeciwny)
+        self.ui.PRAWO.clicked.connect(self.prawo)
+        self.ui.LEWO.clicked.connect(self.lewo)
+        self.ui.DOL.clicked.connect(self.dol)
+        self.ui.GORA.clicked.connect(self.gora)
+
         self.ui.sc.mpl_connect('button_press_event', self.onclick)
 
 
-
     def przesun(self):
-        if not self.ostatniStatek:
-            self.ui.textEdit.clear()
-            self.ui.textEdit.insertPlainText("Nie obracaj przed polozeniem wszystkich statkow")
 
         statek = self.naKtoryStatekKliknelismy()
         znak, orient = self.ui.textEdit.toPlainText()
 
-        if (orient == "o"):
+        if orient == "o":
+            print "Obracamy sie"
             statek.obrot(znak, orient)
         else:
+            print "Przesuwamy sie"
             statek.przesun(znak, orient)
 
+        self.zapisz()
+
         self.poleGry.odswiezTablice()
-        self.poleGry.drukujTablice()
         self.rysujStatki()
         self.ui.sc.draw()
+
+    def obrot_zgodny(self):
+        statek = self.naKtoryStatekKliknelismy()
+        statek.obrot("+", "o")
+        self.poleGry.odswiezTablice()
+        self.rysujStatki()
+        self.ui.sc.draw()
+        self.zapisz()
+    def obrot_przeciwny(self):
+        statek = self.naKtoryStatekKliknelismy()
+        statek.obrot("-", "o")
+        self.poleGry.odswiezTablice()
+        self.rysujStatki()
+        self.ui.sc.draw()
+        self.zapisz()
+    def prawo(self):
+        statek = self.naKtoryStatekKliknelismy()
+        statek.przesun("+", "h")
+        self.poleGry.odswiezTablice()
+        self.rysujStatki()
+        self.ui.sc.draw()
+        self.zapisz()
+    def lewo(self):
+        statek = self.naKtoryStatekKliknelismy()
+        statek.przesun("-", "h")
+        self.poleGry.odswiezTablice()
+        self.rysujStatki()
+        self.ui.sc.draw()
+        self.zapisz()
+    def gora(self):
+        statek = self.naKtoryStatekKliknelismy()
+        statek.przesun("+", "g")
+        self.poleGry.odswiezTablice()
+        self.rysujStatki()
+        self.ui.sc.draw()
+        self.zapisz()
+    def dol(self):
+        statek = self.naKtoryStatekKliknelismy()
+        statek.przesun("-", "d")
+        self.poleGry.odswiezTablice()
+        self.rysujStatki()
+        self.ui.sc.draw()
+        self.zapisz()
+
 
     def rysujStatki(self):
         self.poleGry.odswiezTablice()
@@ -204,8 +282,15 @@ class Komiwojazer(QtGui.QWidget):
     def wstawStatki(self):
             if not self.ostatniStatek:
                 dlugosc = self.dlugoscstatku()              # Pobieramy dlugosc statku z listy dlugosci statkow
+
                 if dlugosc  == 0:
                     self.ostatniStatek = True
+                    nazwa = "my_json.txt"
+
+                    with open(nazwa, 'rb+') as ft:          # Jezeli dodalismy wszystkie statki, to czyscimy prace krokowa
+                        ft.truncate()
+
+                    self.zapisz()                           # I dodajemy aktualne polozenie
 
                 if dlugosc == 0:
                     self.ui.textEdit.clear()

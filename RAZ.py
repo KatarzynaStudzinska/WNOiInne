@@ -84,13 +84,13 @@ class Ui_Widget(object):
         self.widget.setGeometry(QtCore.QRect(20, 10, 651, 441))
         self.widget.setObjectName(_fromUtf8("widget"))
         self.textEdit = QtGui.QTextEdit(Widget)
-        self.textEdit.setGeometry(QtCore.QRect(20, 460, 651, 81))
+        self.textEdit.setGeometry(QtCore.QRect(20, 500, 651, 60))
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
         self.verticalLayoutWidget = QtGui.QWidget(Widget)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(15, 560, 670, 135))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(15, 560, 670, 195))
         self.verticalLayoutWidget.setObjectName(_fromUtf8("verticalLayoutWidget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
-        self.verticalLayout.setMargin(11)
+        self.verticalLayout.setMargin(10)
         self.verticalLayout.setSpacing(6)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.STRZELAJ = QtGui.QPushButton(self.verticalLayoutWidget)
@@ -108,6 +108,74 @@ class Ui_Widget(object):
         self.ZAPIS = QtGui.QPushButton(self.verticalLayoutWidget)
         self.ZAPIS.setObjectName(_fromUtf8("ZAPIS"))
         self.verticalLayout.addWidget(self.ZAPIS)
+        self.ODCZYTZPLIKU = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.ODCZYTZPLIKU.setObjectName(_fromUtf8("ODCZYTZPLIKU"))
+        self.verticalLayout.addWidget(self.ODCZYTZPLIKU)
+
+
+#-----------------------------------------------------------------------------------------------
+
+        self.verticalLayoutWidgetLEWO = QtGui.QWidget(Widget)
+        self.verticalLayoutWidgetLEWO.setGeometry(QtCore.QRect(100, 330, 50, 150))
+        self.verticalLayoutWidgetLEWO.setObjectName(_fromUtf8("verticalLayoutWidgetLEWO"))
+        self.verticalLayoutLEWO = QtGui.QVBoxLayout(self.verticalLayoutWidgetLEWO)
+
+        self.LEWO = QtGui.QPushButton(self.verticalLayoutWidgetLEWO)
+        self.LEWO.setObjectName(_fromUtf8("LEWO"))
+        self.verticalLayoutLEWO.addWidget(self.LEWO)
+
+        self.verticalLayoutWidgetPRAWO = QtGui.QWidget(Widget)
+        self.verticalLayoutWidgetPRAWO.setGeometry(QtCore.QRect(190, 330, 50, 150))
+        self.verticalLayoutWidgetPRAWO.setObjectName(_fromUtf8("verticalLayoutWidgetPRAWO"))
+        self.verticalLayoutPRAWO = QtGui.QVBoxLayout(self.verticalLayoutWidgetPRAWO)
+
+        self.PRAWO = QtGui.QPushButton(self.verticalLayoutWidgetPRAWO)
+        self.PRAWO.setObjectName(_fromUtf8("PRAWO"))
+        self.verticalLayoutPRAWO.addWidget(self.PRAWO)
+
+        self.verticalLayoutWidgetGORA = QtGui.QWidget(Widget)
+        self.verticalLayoutWidgetGORA.setGeometry(QtCore.QRect(145, 285, 50, 150))
+        self.verticalLayoutWidgetGORA.setObjectName(_fromUtf8("verticalLayoutWidgetPRAWO"))
+        self.verticalLayoutPRAWO = QtGui.QVBoxLayout(self.verticalLayoutWidgetGORA)
+
+        self.GORA = QtGui.QPushButton(self.verticalLayoutWidgetGORA)
+        self.GORA.setObjectName(_fromUtf8("GORA"))
+        self.verticalLayoutPRAWO.addWidget(self.GORA)
+        '''self.verticalLayoutWidgetGORA = QtGui.QWidget(Widget)
+        self.verticalLayoutWidgetGORA.setGeometry(QtCore.QRect(145, 305, 50, 150))
+        self.verticalLayoutWidgetGORA.setObjectName(_fromUtf8("verticalLayoutWidgetGORA"))
+        self.verticalLayoutGORA = QtGui.QVBoxLayout(self.verticalLayoutWidgetGORA)
+
+        self.GORA = QtGui.QPushButton(self.verticalLayoutWidgetGORA)
+        self.GORA.setObjectName(_fromUtf8("GORA"))
+        self.verticalLayoutGORA.addWidget(self.GORA)'''
+
+        self.verticalLayoutWidgetDOL = QtGui.QWidget(Widget)
+        self.verticalLayoutWidgetDOL.setGeometry(QtCore.QRect(145, 375, 50, 150))
+        self.verticalLayoutWidgetDOL.setObjectName(_fromUtf8("verticalLayoutWidgetDOL"))
+        self.verticalLayoutDOL = QtGui.QVBoxLayout(self.verticalLayoutWidgetDOL)
+
+        self.DOL = QtGui.QPushButton(self.verticalLayoutWidgetDOL)
+        self.DOL.setObjectName(_fromUtf8("DOL"))
+        self.verticalLayoutDOL.addWidget(self.DOL)
+
+        self.verticalLayoutWidgetOBROTZEGAR = QtGui.QWidget(Widget)
+        self.verticalLayoutWidgetOBROTZEGAR.setGeometry(QtCore.QRect(235, 330, 50, 150))
+        self.verticalLayoutWidgetOBROTZEGAR.setObjectName(_fromUtf8("verticalLayoutWidgetOBROTZEGAR"))
+        self.verticalLayoutOBROTZEGAR = QtGui.QVBoxLayout(self.verticalLayoutWidgetOBROTZEGAR)
+
+        self.OBROTZEGAR = QtGui.QPushButton(self.verticalLayoutWidgetOBROTZEGAR)
+        self.OBROTZEGAR.setObjectName(_fromUtf8("OBROTZEGAR"))
+        self.verticalLayoutOBROTZEGAR.addWidget(self.OBROTZEGAR)
+
+        self.verticalLayoutWidgetOBROTPRZECIWNIE = QtGui.QWidget(Widget)
+        self.verticalLayoutWidgetOBROTPRZECIWNIE.setGeometry(QtCore.QRect(55, 330, 50, 150))
+        self.verticalLayoutWidgetOBROTPRZECIWNIE.setObjectName(_fromUtf8("verticalLayoutWidgetOBROTPRZECIWNIE"))
+        self.verticalLayoutOBROTPRZECIWNIE = QtGui.QVBoxLayout(self.verticalLayoutWidgetOBROTPRZECIWNIE)
+
+        self.OBROTPRZECIWNIE = QtGui.QPushButton(self.verticalLayoutWidgetOBROTPRZECIWNIE)
+        self.OBROTPRZECIWNIE.setObjectName(_fromUtf8("OBROTPRZECIWNIE"))
+        self.verticalLayoutOBROTPRZECIWNIE.addWidget(self.OBROTPRZECIWNIE)
 
 
         self.label = QtGui.QLabel(Widget)
@@ -128,7 +196,15 @@ class Ui_Widget(object):
         self.WSTAW.setText(_translate("Widget", "WSTAW STATEK", None))
         self.INNY.setText(_translate("Widget", "CO INNEGO", None))
         self.ZAPIS.setText(_translate("Widget", "ZAPIS", None))
-        self.label.setText(_translate("Widget", "+o/-o - obrot +w/-h -przesuwanie", None))
+        self.ODCZYTZPLIKU.setText(_translate("Widget", "ODCZYT PLIKU", None))
+        #self.label.setText(_translate("Widget", "+o/-o - obrot +w/-h -przesuwanie", None))
+        self.LEWO.setText(_translate("Widget", chr(27), None))
+        self.PRAWO.setText(_translate("Widget", chr(26), None))
+        self.GORA.setText(_translate("Widget", chr(24), None))
+        self.DOL.setText(_translate("Widget", unichr(8595), None))
+        self.OBROTZEGAR.setText(_translate("Widget", unichr(10549), None))
+        self.OBROTPRZECIWNIE.setText(_translate("Widget", unichr(10548), None))
+
 
 
 if __name__ == "__main__":

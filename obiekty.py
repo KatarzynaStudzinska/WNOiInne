@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Statek():
 
             def __init__(self, jakaDlug, dajX, dajY, n):
@@ -12,6 +13,11 @@ class Statek():
                 self.stan = [1]*jakaDlug
                 self.pozycjaCzlonu = []
 
+            def getCzyRuszamy(self):
+                return self.czyRuszamy
+
+            def setCzyRuszamy(self):
+                self.czyRuszamy = False
 
             def zmienPozycjaCzlonu(self, x, y):
                 self.pozycjaCzlonu.append([x, y])
@@ -24,50 +30,72 @@ class Statek():
 
             def obrot(self, znak, orientacja):
                 if self.dlugosc != 1:                        #  Nalezy  uzwglednic przypadek dla statku pojedynczego - dla niego nie ma obrotu
-                   # if self.czyWyjedziemy("o", znak):
-                    #    print "Statek opuscilby mape. Nie wykonujesz ruchu."
-                    #else:
-                        if ((znak == "+" and (self.pozycjaCzlonu[0][0]-self.pozycjaCzlonu[1][0] == -1)) or
-                             (znak == "-" and (self.pozycjaCzlonu[0][0]-self.pozycjaCzlonu[1][0]) == 1)):
+                    if ((znak == "+" and (self.pozycjaCzlonu[0][0]-self.pozycjaCzlonu[1][0] == -1)) or      # Godzina 3 obrot ze wskazowkami
+                            (znak == "-" and (self.pozycjaCzlonu[0][0]-self.pozycjaCzlonu[1][0]) == 1)):    # Godzina 9 obrot przeciwnie do wskazowek
+                        if self.pozycjaCzlonu[0][1] - self.dlugosc + 1 >= 0:
                             for i in range(self.dlugosc):
                                 self.pozycjaCzlonu[i] = [self.pozycjaCzlonu[0][0], self.pozycjaCzlonu[0][1]-i]
+                        else:
+                            print 'Nie mozna wykonac obrotu!'
 
-                        elif ((znak == "+" and (self.pozycjaCzlonu[0][1]-self.pozycjaCzlonu[1][1]) == 1) or
-                              (znak == "-" and (self.pozycjaCzlonu[0][1]-self.pozycjaCzlonu[1][1]) == -1)):
+                    elif ((znak == "+" and (self.pozycjaCzlonu[0][1]-self.pozycjaCzlonu[1][1]) == 1) or     # Godzina 6, obrot ze wskazowkami zegara
+                              (znak == "-" and (self.pozycjaCzlonu[0][1]-self.pozycjaCzlonu[1][1]) == -1)): # Godzina 12, obrot przeciwnie do wskazowek
+                        if self.pozycjaCzlonu[0][0] - self.dlugosc + 1 >= 0:
                             for i in range(self.dlugosc):
                                 self.pozycjaCzlonu[i] = [self.pozycjaCzlonu[0][0]-i, self.pozycjaCzlonu[0][1]]
+                        else:
+                            print 'Nie mozna wykonac obrotu!'
 
-                        elif ((znak == "+" and (self.pozycjaCzlonu[0][0]-self.pozycjaCzlonu[1][0]) == 1) or
-                              (znak == "-" and (self.pozycjaCzlonu[0][0]-self.pozycjaCzlonu[1][0]) == -1)):
+                    elif ((znak == "+" and (self.pozycjaCzlonu[0][0]-self.pozycjaCzlonu[1][0]) == 1) or     # Godzina 9, obrot ze wskazowkami
+                              (znak == "-" and (self.pozycjaCzlonu[0][0]-self.pozycjaCzlonu[1][0]) == -1)): # Godzina 3, obrot przeciwnie do wskazowek
+                        if self.pozycjaCzlonu[0][1] + self.dlugosc - 1 <= 9:
                             for i in range(self.dlugosc):
                                 self.pozycjaCzlonu[i] = [self.pozycjaCzlonu[0][0], self.pozycjaCzlonu[0][1]+i]
+                        else:
+                            print 'Nie mozna wykonac obrotu!'
 
-                        elif ((znak == "+" and (self.pozycjaCzlonu[0][1]-self.pozycjaCzlonu[1][1]) == -1) or
-                              (znak == "-" and (self.pozycjaCzlonu[0][1]-self.pozycjaCzlonu[1][1]) == 1)):
+                    elif ((znak == "+" and (self.pozycjaCzlonu[0][1]-self.pozycjaCzlonu[1][1]) == -1) or    # Godzina 12, obrot ze wskazowkam zegara
+                              (znak == "-" and (self.pozycjaCzlonu[0][1]-self.pozycjaCzlonu[1][1]) == 1)):  # Godzina 6,  obrot przeciwnie do wskazowek
+                        if self.pozycjaCzlonu[0][0] + self.dlugosc - 1 <= 9:
                             for i in range(self.dlugosc):
                                 self.pozycjaCzlonu[i] = [self.pozycjaCzlonu[0][0]+i, self.pozycjaCzlonu[0][1]]
+                        else:
+                            print 'Nie mozna wykonac obrotu!'
 
             def przesun(self, znak, orientacja):
 
                 if znak == "+":
                     trasa = 1
-                else:
+                elif znak == "-":
                     trasa = -1
 
-                if orientacja == "h":
-                    for i in range(self.dlugosc):
-                        pozx, pozy = self.pozycjaCzlonu[i]
-                        if not pozx + trasa < 0 and not pozx + trasa > 9:
-                            self.pozycjaCzlonu[i] = [pozx + trasa, pozy]
-                        else:
-                            print "Wyjezdzasz statkiem poza mape!"
-                else:
-                    for i in range(self.dlugosc):
-                        pozx, pozy = self.pozycjaCzlonu[i]
-                        if not pozy + trasa < 0 and not pozy + trasa > 9:
-                            self.pozycjaCzlonu[i] = [pozx, pozy + trasa]
-                        else:
-                            print "Wyjezdzasz statkiem poza mape!"
+                pozx, pozy = self.pozycjaCzlonu[0]                                  # Wspolrzedne pierwszego czlonu
+                pozx1, pozy1 = self.pozycjaCzlonu[1]                                # Wspolrzedne drugiego czlonu
+
+                if orientacja == "h":                                               # Przesuwajac poziomo  statki
+                    if (pozx + trasa >= 0) and (pozx + self.dlugosc + trasa < 11) and (pozx - pozx1) == -1:     # Ustawiony poziomo normalnie
+                        for i in range(self.dlugosc):
+                            self.pozycjaCzlonu[i] = [self.pozycjaCzlonu[i][0] + trasa, self.pozycjaCzlonu[i][1]]
+                    elif (self.pozycjaCzlonu[self.dlugosc-1][0] + trasa >= 0) and (self.pozycjaCzlonu[self.dlugosc-1][0] + self.dlugosc + trasa < 11) and (pozx - pozx1) == 1:     # Ustawiony poziomo odwrocony
+                        for i in range(self.dlugosc):
+                            self.pozycjaCzlonu[i] = [self.pozycjaCzlonu[i][0] + trasa, self.pozycjaCzlonu[i][1]]
+                    elif (pozx + trasa >= 0) and (pozx + trasa < 10) and np.absolute(pozy - pozy1) == 1:     # Ustawiony pionowo
+                        for i in range(self.dlugosc):
+                            self.pozycjaCzlonu[i] = [self.pozycjaCzlonu[i][0] + trasa, self.pozycjaCzlonu[i][1]]
+                    else:
+                        print "Wyjezdzasz statkiem poza mape!"
+                else:                                                                                     # Przesuwanie statku w pionie, jezeli
+                    if(pozy + trasa - self.dlugosc + 1 >= 0) and (pozy + trasa < 10) and (pozy - pozy1) == 1:           # Jezeli statki ustawione sa pionowo - od pol. pocz. zgodnie z ruchem wskazowek zegara
+                        for i in range(self.dlugosc):
+                            self.pozycjaCzlonu[i] = [self.pozycjaCzlonu[i][0], self.pozycjaCzlonu[i][1] + trasa]
+                    elif (self.pozycjaCzlonu[self.dlugosc-1][1] + trasa - self.dlugosc + 1 >= 0) and (self.pozycjaCzlonu[self.dlugosc-1][1] + trasa < 10) and (pozy - pozy1) == -1:            # Jezeli statki ustawione sa pionowo - od pol. pocz. przeciwnie do ruchu wskazowek zegara
+                        for i in range(self.dlugosc):
+                            self.pozycjaCzlonu[i] = [self.pozycjaCzlonu[i][0], self.pozycjaCzlonu[i][1] + trasa]
+                    elif (pozy + trasa >= 0) and (pozy + trasa < 10) and np.absolute(pozx - pozx1) == 1:  # Jezeli statki ustawione sa poziomo
+                        for i in range(self.dlugosc):
+                            self.pozycjaCzlonu[i] = [self.pozycjaCzlonu[i][0], self.pozycjaCzlonu[i][1] + trasa]
+                    else:
+                        print "Wyjezdzasz statkiem poza mape!"
 
 
 class Tablica():
@@ -81,12 +109,8 @@ class Tablica():
             return self.mojaTablica
 
         def drukujTablice(self):
-            print "Oto ona: \n\n"
             for i in range(self.mojaTablica.__len__()):
                 print self.mojaTablica[i]
-
-            for statek in self.tablicaStatkow:
-                print statek.pozycjaCzlonu
 
         def piszTablice(self):
             for statek in self.tablicaStatkow:
