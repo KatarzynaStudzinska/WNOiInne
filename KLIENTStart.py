@@ -8,6 +8,9 @@ from random import random
 from threading import Thread, Lock
 from PyQt4 import QtCore, QtGui
 from RAZ import Ui_Widget
+from xml.etree.ElementTree import Element
+import wrog
+from xml.etree.ElementTree import tostring
 
 global PORT, HOST, RECV_BUFFER, killall
 
@@ -18,6 +21,14 @@ PORT = 8888                     # Portem labolatoryjnym jest 50002
 RECV_BUFFER = 2048
 killall = False
 
+
+def dict_to_xml(tag, d):
+    elem = Element(tag)
+    for key, val in d.items():
+        child = Element(key)
+        child.text = str(val)
+        elem.append(child)
+    return elem
 
 class Komiwojazer(QtGui.QWidget):
     _aktualneKliki = []
@@ -76,6 +87,39 @@ class Komiwojazer(QtGui.QWidget):
                 json.dump(data, fp)
             pass
 
+
+    def zapiszXML(self):
+        self.poleGry.drukujTablice()
+
+        if not self.ostatniStatek:
+            self.ui.textEdit.clear()
+            self.ui.textEdit.insertPlainText("Nie mozna zapisac przed polozeniem wszyskich stastkow.")
+
+        else:
+            nazwa = self.ui.textEdit.toPlainText() + ".txt"
+
+            self.ui.textEdit.clear()
+            self.ui.textEdit.insertPlainText("Zapisano!")
+            tablicaCzlonow = []
+            tablicaStanuStatku = []
+            tablicaGdzieStatki = []
+            tablicaDlugosci = []
+
+
+            for statek in (self.poleGry.tablicaStatkow):
+                tablicaCzlonow.append(statek.pozycjaCzlonu)
+                tablicaStanuStatku.append(statek.stan)
+                tablicaGdzieStatki.append(statek.pozycjaCzlonu[0])
+                tablicaDlugosci.append(statek.dlugosc)
+
+            slownik = {'plansza': self.poleGry.dajMojaTablica(), 'gdzieStatki':tablicaGdzieStatki, 'zniszczenie':tablicaStanuStatku,
+                    'dlugosc':tablicaDlugosci, 'czlony':tablicaCzlonow}
+
+            e = dict_to_xml('stock', slownik)
+            #print tostring(e)
+
+
+
     def odczyt(self):
 
         self.ostatniStatek = True
@@ -95,6 +139,8 @@ class Komiwojazer(QtGui.QWidget):
             self.poleGry.odswiezTablice()
         self.rysujStatki()
         self.poleGry.drukujTablice()
+
+
 
     def naKtoryStatekKliknelismy(self):
         for i in range(self.poleGry.tablicaStatkow.__len__()):
@@ -133,11 +179,12 @@ class Komiwojazer(QtGui.QWidget):
         self.ostatniStatek = False
         self._aktualneKliki = [0, 0]
         self.dane = obiekt.Dane()
+
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_Widget()
         self.ui.setupUi(self)
         self.setWindowTitle("Statki")
-        self.initClient()
+
 
         miod.rysujMiod(self.ui.sc.axes)
 
@@ -156,12 +203,13 @@ class Komiwojazer(QtGui.QWidget):
 
         self.dlugoscstatku = dlugosciStatku()
         self.poleGry = obiekt.Tablica()
+        self.wrog_moj = wrog.wrog()
 
-        QtCore.QObject.connect(self.ui.STRZELAJ, QtCore.SIGNAL("clicked()"), self.strzel)
-        QtCore.QObject.connect(self.ui.WSTAW, QtCore.SIGNAL("clicked()"), self.wstawStatki)
+
+        self.ui.STRZELAJ.clicked.connect(self.strzel)
+        self.ui.WSTAW.clicked.connect(self.wstawStatki)
         #self.ui.PRZESUN.connect("clicked()", self.przesun)
-        self.ui.PRZESUN.clicked.connect(self.przesun)
-        self.ui.STRZELAJ.clicked.connect(self.kur)
+
         self.ui.ZAPIS.clicked.connect(self.zapisz)
         self.ui.INNY.clicked.connect(self.odczyt)
         self.ui.sc.mpl_connect('button_press_event', self.onclick)
@@ -182,7 +230,7 @@ class Komiwojazer(QtGui.QWidget):
             statek.przesun(znak, orient)
 
         self.poleGry.odswiezTablice()
-        self.poleGry.drukujTablice()
+        #self.poleGry.drukujTablice()
         self.rysujStatki()
         self.ui.sc.draw()
 
@@ -221,12 +269,27 @@ class Komiwojazer(QtGui.QWidget):
                                                                          self.poleGry.tablicaStatkow.__len__()))
                         self.poleGry.piszTablice()
                        # self.ui.sc._tab = self.poleGry.mojaTablica
-                self.poleGry.drukujTablice()
+                #self.poleGry.drukujTablice()
                 self.rysujStatki()
                 self.ui.sc.draw()
                 pass
 
     def strzel(self):
+
+        self.wrog_moj.dostan(self._aktualneKliki[0], self._aktualneKliki[1])
+        x, y = self.wrog_moj.strzel()
+        for statek in self.poleGry.tablicaStatkow:
+            i = 0
+            for czlon in statek.pozycjaCzlonu:
+                if czlon[0] == y and czlon[1] == x:
+                    statek.stan[i] = 2
+
+                i = i + 1
+        self.rysujStatki()
+
+        pass
+
+    def strzelclient(self):
         data = str(self._aktualneKliki[0])+str( self._aktualneKliki[1])#self.ui.textEdit.toPlainText()#str(raw_input())
         self.client_socket.send(data)
         self.ui.textEdit.clear()
@@ -256,8 +319,6 @@ class Komiwojazer(QtGui.QWidget):
                     statek.stan[i] = 2
                 i = i + 1
         self.rysujStatki()
-
-
 
     def oberwij(self):
         data = ""
